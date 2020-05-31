@@ -1,5 +1,7 @@
 # don't check-in secrets
 .env
+.idea/workspace.xml
+.idea/tasks.xml
 
 # python files
 __pycache__
