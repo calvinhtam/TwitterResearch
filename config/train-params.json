@@ -1,0 +1,7 @@
+{
+    "data_dir": "data/",
+    "output_dir": "model_save_64_max_len_4_epochs_32_batch/",
+    "fp_list":["train_data.csv"],
+    "epochs": 4,
+    "batch_size": 32
+}

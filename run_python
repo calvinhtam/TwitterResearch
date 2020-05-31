@@ -1,0 +1,4 @@
+#!/bin/bash                                                                     
+echo Starting python using $1 as input and $2 as argument
+python3 $1 $2                                                                     
+exit 0
