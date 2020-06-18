@@ -7,12 +7,11 @@ from transformers import get_linear_schedule_with_warmup,\
     BertForSequenceClassification
 import pandas as pd
 import os
-import sys
 import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data, split_data, merge_dfs, clean_df, logger
+    get_data_df, split_data, merge_dfs, clean_df, logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -414,7 +413,8 @@ def trainer(X_train_inputs, X_test_inputs, X_val_inputs,
 
 
 def training_driver(data_dir='data/', output_dir='model_save/',
-           fp_list=('train_data.csv'), epochs=4, batch_size=32, max_len=64):
+                    fp_list=('train_data.csv',), epochs=4, batch_size=32,
+                    max_len=64):
     """
     The main driver for everything skskksksk
     Sets everything up for training before the real trainer comes in : - )
@@ -429,12 +429,14 @@ def training_driver(data_dir='data/', output_dir='model_save/',
     # Epochs 2-4
     # Batch_size 16 or 32
 
+    # Establish Logger
     logger(output_dir='model_save/')
 
     device, n_gpu, tokenizer = prep()
 
-    res_dfs = get_data(data_dir, fp_list)
-
+    # Get the dataframes of training data
+    train_dir = data_dir + 'train/'
+    res_dfs = get_data(train_dir, fp_list)
     if len(res_dfs) == 1:
         df = res_dfs[0]
     else:
@@ -447,7 +449,7 @@ def training_driver(data_dir='data/', output_dir='model_save/',
 
     X_train_inputs, X_test_inputs, X_val_inputs, \
         y_train_labels, y_test_labels, y_val_labels, \
-        X_train_masks, X_test_masks, X_val_masks = split_data(df, data_dir)
+        X_train_masks, X_test_masks, X_val_masks = split_data(df, train_dir)
 
     trainer(X_train_inputs, X_test_inputs, X_val_inputs,
             y_train_labels, y_test_labels, y_val_labels,

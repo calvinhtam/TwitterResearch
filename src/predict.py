@@ -12,7 +12,7 @@ import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data, split_data, merge_dfs, clean_df, Logger
+    get_data_df, split_data, merge_dfs, clean_df, Logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -413,8 +413,8 @@ def trainer(X_train_inputs, X_test_inputs, X_val_inputs,
         # torch.save(args, os.path.join(curr_output_dir, 'training_args.bin'))
 
 
-def predicting_driver(data_dir='data/', model_dir='model_save/',
-                      output_dir='out/'):
+def predicting_driver(data_dir='data/', output_dir='out/',
+                      fp_list=('data_to_predict.csv',)):
     """
     The main driver for everything skskksksk
     Sets everything up for training before the real trainer comes in : - )

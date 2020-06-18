@@ -45,6 +45,7 @@ ordinal_list = ['policies', 'ask_requests']
 
 y_cols = general_list + ordinal_list + policy_list + ask_list
 
+
 class Logger(object):
     def __init__(self, output_dir):
         self.terminal = sys.stdout
@@ -149,7 +150,6 @@ def cleaner(txt, decoder_dict=decoder_dict):
     return txt
 
 
-
 def pad_sequences_f(token_arr, maxlen, dtype="long",
                     value=0, truncating="post", padding="post"):
     return pad_sequences([token_arr], maxlen=maxlen, dtype=dtype,
@@ -157,7 +157,7 @@ def pad_sequences_f(token_arr, maxlen, dtype="long",
                          padding=padding)[0]
 
 
-def get_data(data_dir, fp_list):
+def get_data_df(data_dir, fp_list):
     """
     Collects and stores data into a list of dataframes
     :param data_dir: Data directories
