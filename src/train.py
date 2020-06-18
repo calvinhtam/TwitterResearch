@@ -12,7 +12,7 @@ import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data, split_data, merge_dfs, clean_df, Logger
+    get_data, split_data, merge_dfs, clean_df, logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -429,12 +429,7 @@ def training_driver(data_dir='data/', output_dir='model_save/',
     # Epochs 2-4
     # Batch_size 16 or 32
 
-    # Create output directory if needed
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # Logs print output in file
-    sys.stdout = Logger(output_dir)
+    logger(output_dir='model_save/')
 
     device, n_gpu, tokenizer = prep()
 

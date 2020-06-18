@@ -5,11 +5,11 @@ import time
 import os
 import pandas as pd
 import numpy as np
-from openpyxl import load_workbook
-from bs4 import BeautifulSoup
 
 # Twitter and Dropbox API credentials
 import api_cred as ac
+
+from processing import logger
 
 sys.path.insert(1, 'drive/My Drive/tweets_data_collection')
 
@@ -105,8 +105,8 @@ def get_new_tweets(tweet_name, since_id=1, api=authenticate_twitter(),
                                        count = 200,
                                        tweet_mode = tweet_mode
                                        )
-
-    logger.info("Downloading %d tweets from %s" % (len(tweets), tweet_name))
+    logger()
+    print("Downloading %d tweets from %s" % (len(tweets), tweet_name))
     # Reverses back to chronological order
     return list(tweets[::-1])
 
@@ -175,10 +175,10 @@ def df_to_file(row, out_fp):
     return {'handle': curr_handle,
             'since_id': curr_handle_tweets['id'].iloc[-1]}
 
-def collect_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
+def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
                  tags={'id', 'created_at', 'full_text', 'retweet_count',
                      'favorite_count'},
-                 chunk=100):
+                 chunk=100, extended_mode=True):
     """
     Pulls new latest tweets and appends them to the correct csv file
     params: tweet_output_fp - path to the file to save the new tweets
@@ -192,9 +192,7 @@ def collect_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
 
     global first_row
 
-    # start timer
-    start = time.time()
-    logger.info("Start...")
+    print("Start...")
 
     # process the paths so they are passable to load_sheets
     tweets_path = os.path.expanduser(tweet_output_fp)
@@ -229,8 +227,9 @@ def collect_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
                     continue
                 # Gets tweets
                 curr_tweets_series = curr_handles.apply(get_new_tweets,
-                                                        args=(1, api, True,
-                                                            tags))
+                                                        args=(1, api,
+                                                              extended_mode,
+                                                              tags))
                 # Convert to format for df_to_file
                 curr_tweets_series = curr_tweets_series.rename('tweet_list')
                 curr_tweets_series.index = curr_handles

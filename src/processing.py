@@ -1,13 +1,11 @@
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-import io
-import os
 import sys
 import numpy as np
 import pandas as pd
 import re
-import time
+import os
 import datetime
 
 # Set the seed value all over the place to make this reproducible.
@@ -59,6 +57,17 @@ class Logger(object):
     def flush(self):
         # this handles the flush command by doing nothing.
         pass
+
+
+def logger(output_dir='output_log/'):
+    # Create output directory if needed
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Logs print output in file
+    sys.stdout = Logger(output_dir)
+    return
+
 
 def format_time(elapsed):
     """
