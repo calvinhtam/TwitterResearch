@@ -11,7 +11,7 @@ import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data_df, split_data, merge_dfs, clean_df, logger
+    get_data_dfs, split_data, merge_dfs, clean_df, logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -436,7 +436,7 @@ def training_driver(data_dir='data/', output_dir='model_save/',
 
     # Get the dataframes of training data
     train_dir = data_dir + 'train/'
-    res_dfs = get_data(train_dir, fp_list)
+    res_dfs = get_data_dfs(train_dir, fp_list)
     if len(res_dfs) == 1:
         df = res_dfs[0]
     else:

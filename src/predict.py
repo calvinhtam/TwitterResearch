@@ -12,7 +12,7 @@ import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data_df, split_data, merge_dfs, clean_df, Logger
+    get_data_dfs, split_data, merge_dfs, clean_df, Logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -422,23 +422,17 @@ def predicting_driver(data_dir='data/', output_dir='out/',
     :param data_dir: Directory where the data be
     :param output_dir: Directory for the output : - )
     :param fp_list: The filepaths for the data
-    :param epochs: Number of epochs
-    :param batch_size: Size of batch
-    :return: None
+    :return None
     """
-    # Epochs 2-4
-    # Batch_size 16 or 32
 
-    # Create output directory if needed
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # Logs print output in file
-    sys.stdout = Logger(output_dir)
+    # Establish Logger
+    logger(output_dir='model_save/')
 
     device, n_gpu, tokenizer = prep()
 
-    res_dfs = get_data(data_dir, fp_list)
+    # Get the dataframes of data to predict on
+    predict_dir = data_dir + 'predict/'
+    res_dfs = get_data_dfs(predict_dir, fp_list)
 
     if len(res_dfs) == 1:
         df = res_dfs[0]
@@ -448,11 +442,11 @@ def predicting_driver(data_dir='data/', output_dir='out/',
         df = merge_dfs(res_dfs[0], res_dfs[1])
 
     df, neg_labels = clean_df(df)
-    df = convert_text(df, tokenizer, output_dir, max_len)
+    df = convert_text(df, tokenizer, predict_dir, max_len)
 
     X_train_inputs, X_test_inputs, X_val_inputs, \
         y_train_labels, y_test_labels, y_val_labels, \
-        X_train_masks, X_test_masks, X_val_masks = split_data(df, data_dir)
+        X_train_masks, X_test_masks, X_val_masks = split_data(df, predict_dir)
 
     trainer(X_train_inputs, X_test_inputs, X_val_inputs,
             y_train_labels, y_test_labels, y_val_labels,
