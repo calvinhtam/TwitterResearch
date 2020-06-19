@@ -157,7 +157,7 @@ def pad_sequences_f(token_arr, maxlen, dtype="long",
                          padding=padding)[0]
 
 
-def get_data_df(data_dir, fp_list):
+def get_data_dfs(data_dir, fp_list):
     """
     Collects and stores data into a list of dataframes
     :param data_dir: Data directories

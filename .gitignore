@@ -11,3 +11,8 @@ __pycache__
 
 # don't check-in data
 data
+
+# don't check-in model
+model_save
+model_save_64_max_len_4_epochs_32_batch
+
