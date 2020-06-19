@@ -234,7 +234,7 @@ def train_bert(model, train_dataloader, device, optimizer, scheduler,
     return model, loss_values
 
 
-def val_bert(model, val_dataloader, device, curr_y_val_labels, curr_y_col,
+def val_bert(model, curr_dataloader, device, curr_y_labels, curr_y_col,
              neg_labels):
     """
     Validates on our model on validation dataset
@@ -261,7 +261,7 @@ def val_bert(model, val_dataloader, device, curr_y_val_labels, curr_y_col,
     nb_eval_steps, nb_eval_examples = 0, 0
 
     # Evaluate data for one epoch
-    for batch in val_dataloader:
+    for batch in curr_dataloader:
         # Add batch to GPU
         batch = tuple(t.to(device) for t in batch)
 
@@ -313,7 +313,7 @@ def val_bert(model, val_dataloader, device, curr_y_val_labels, curr_y_col,
         pred_df.rename({i: i - len(pred_df.columns)
                         for i in range(neg_labels[curr_y_col],
                                        int(max(pred_df.columns)))})
-    get_classification_report(pred_df, curr_y_col, curr_y_val_labels)
+    get_classification_report(pred_df, curr_y_col, curr_y_labels)
     print("  Validation took: {:}".format(format_time(time.time() -
                                                       t0)))
 
