@@ -12,7 +12,7 @@ import numpy as np
 import time
 from csv import writer
 from processing import y_cols, format_time, get_classification_report,\
-    get_data_dfs, split_data, merge_dfs, clean_df, Logger
+    get_data_dfs, split_data, merge_dfs, clean_df, logger
 from bert import prep, bert_tokenize_f, convert_text
 
 # Set the seed value all over the place to make this reproducible.
@@ -413,7 +413,13 @@ def trainer(X_train_inputs, X_test_inputs, X_val_inputs,
         # torch.save(args, os.path.join(curr_output_dir, 'training_args.bin'))
 
 
-def predicting_driver(data_dir='data/', output_dir='out/',
+def predictor(X_inputs, X_att_masks, y, neg_labels, output_dir, model_dir,
+              device, epochs, batch_size):
+    pass
+
+
+def predicting_driver(data_dir='data/', model_dir='model_save/',
+                      output_dir='model_predict/',
                       fp_list=('data_to_predict.csv',)):
     """
     The main driver for everything skskksksk
@@ -426,9 +432,13 @@ def predicting_driver(data_dir='data/', output_dir='out/',
     """
 
     # Establish Logger
-    logger(output_dir='model_save/')
+    logger(output_dir=output_dir)
 
     device, n_gpu, tokenizer = prep()
+    configs = pd.read_csv(model_dir + 'config.csv')
+    epochs = configs['epochs']
+    batch_size = configs['batch_size']
+    max_len = configs['max_len']
 
     # Get the dataframes of data to predict on
     predict_dir = data_dir + 'predict/'
@@ -444,20 +454,10 @@ def predicting_driver(data_dir='data/', output_dir='out/',
     df, neg_labels = clean_df(df)
     df = convert_text(df, tokenizer, predict_dir, max_len)
 
-    X_train_inputs, X_test_inputs, X_val_inputs, \
-        y_train_labels, y_test_labels, y_val_labels, \
-        X_train_masks, X_test_masks, X_val_masks = split_data(df, predict_dir)
+    X_inputs = df['padded_tokenized_text']
+    X_att_masks = df['att_masks']
+    y = df[y_cols].astype(int)
 
-    trainer(X_train_inputs, X_test_inputs, X_val_inputs,
-            y_train_labels, y_test_labels, y_val_labels,
-            X_train_masks, X_test_masks, X_val_masks,
-            neg_labels, output_dir, device,
-            epochs, batch_size)
 
-    # Saves the configurations of the epoch, batch_size, and max_len as a csv
-    configs_to_save_f = open(output_dir + 'config.csv', 'w', newline='')
-    configs_to_save_csv_writer = writer(configs_to_save_f)
-    configs_to_save_csv_writer.writerow(['Configurations', 'Value'])
-    configs_to_save_csv_writer.writerow(['epochs', epochs])
-    configs_to_save_csv_writer.writerow(['batch_size', batch_size])
-    configs_to_save_csv_writer.writerow(['max_len', max_len])
+    predictor(X_inputs, X_att_masks, y, neg_labels, output_dir, model_dir,
+              device, epochs, batch_size)

@@ -430,7 +430,7 @@ def training_driver(data_dir='data/', output_dir='model_save/',
     # Batch_size 16 or 32
 
     # Establish Logger
-    logger(output_dir='model_save/')
+    logger(output_dir=output_dir)
 
     device, n_gpu, tokenizer = prep()
 
