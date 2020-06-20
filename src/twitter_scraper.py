@@ -121,7 +121,7 @@ def get_necessary_info(tweet_status, info_list):
     """
     res_info = {}
     for key in info_list:
-        if key != 'full_text' or 'retweeted_status' not in tweet_status:
+        if (key != 'full_text' and key != 'text') or 'retweeted_status' not in tweet_status:
             res_info[key] = tweet_status[key]
         else:
             res_info[key] = \
