@@ -181,9 +181,9 @@ def df_to_file(row, out_fp):
 
 
 def get_data(data_dir='data/', tweet_output_fp='complete_state_leg_tweets.csv',
-             twitter_handles_fp='complete_state_leg_handles_record.csv',
-             handles_record_fp='State Legislator Twitter Handles - ' +
+             twitter_handles_fp='State Legislator Twitter Handles - ' +
                                'Lower House Full Sample.csv',
+             handles_record_fp='complete_state_leg_handles_record.csv',
              tags={'id', 'created_at', 'full_text', 'retweet_count',
                    'favorite_count'},
              chunk=100, extended_mode=True):
