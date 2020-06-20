@@ -43,6 +43,7 @@ possible_info = {'contributors', 'coordinates', 'created_at', 'entities',
                  'retweeted', 'retweeted_status', 'source', 'text',
                  'truncated', 'user'}
 
+
 def get_new_tweets(tweet_name, since_id=1, api=authenticate_twitter(),
                    extended_mode=True,
                    info_tags={'id', 'created_at', 'full_text', 'retweet_count',
@@ -110,6 +111,7 @@ def get_new_tweets(tweet_name, since_id=1, api=authenticate_twitter(),
     # Reverses back to chronological order
     return list(tweets[::-1])
 
+
 def get_necessary_info(tweet_status, info_list):
     """
     Helper function fpr get_tweet_info
@@ -128,6 +130,7 @@ def get_necessary_info(tweet_status, info_list):
                         tweet_status['retweeted_status'][key])
     return res_info
 
+
 def get_tweet_info(tweet_statuses, info_list):
     """
     Grabs all the necessary json info and places them into a nice little
@@ -140,6 +143,7 @@ def get_tweet_info(tweet_statuses, info_list):
     curr_tweets_series = tweet_statuses.apply(get_necessary_info,
             args=(info_list,))
     return curr_tweets_series.to_numpy()
+
 
 def df_to_file(row, out_fp):
     """
@@ -175,10 +179,14 @@ def df_to_file(row, out_fp):
     return {'handle': curr_handle,
             'since_id': curr_handle_tweets['id'].iloc[-1]}
 
-def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
-                 tags={'id', 'created_at', 'full_text', 'retweet_count',
-                     'favorite_count'},
-                 chunk=100, extended_mode=True):
+
+def get_data(data_dir='data/', tweet_output_fp='complete_state_leg_tweets.csv',
+             twitter_handles_fp='complete_state_leg_handles_record.csv',
+             handles_record_fp='State Legislator Twitter Handles - ' +
+                               'Lower House Full Sample.csv',
+             tags={'id', 'created_at', 'full_text', 'retweet_count',
+                   'favorite_count'},
+             chunk=100, extended_mode=True):
     """
     Pulls new latest tweets and appends them to the correct csv file
     params: tweet_output_fp - path to the file to save the new tweets
@@ -194,9 +202,16 @@ def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
 
     print("Start...")
 
-    # process the paths so they are passable to load_sheets
-    tweets_path = os.path.expanduser(tweet_output_fp)
-    twitter_list_path = os.path.expanduser(twitter_handles_fp)
+    if not isinstance(tags, set) and not isinstance(tags, list) and \
+            not isinstance(tags, dict):
+        print('The parameter tags must be in iterable set of tags found in' +
+              'the JSON data connected to each tweet from the Tweepy API')
+        return
+    tags = set(tags)
+
+    # process the paths
+    tweets_path = os.path.expanduser(data_dir + tweet_output_fp)
+    twitter_list_path = os.path.expanduser(data_dir + twitter_handles_fp)
 
     # load and prepare list of twitter accounts
     list_df = pd.read_csv(twitter_list_path)
@@ -205,10 +220,10 @@ def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
     api = authenticate_twitter()
 
     # Writes headers of output and records files
-    with open(tweet_output_fp, 'w+') as csvfile:
+    with open(data_dir + tweet_output_fp, 'w+') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['handle'] + sorted(tags))
-    with open(handles_record_fp, 'w+') as csvfile:
+    with open(data_dir + handles_record_fp, 'w+') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['handle', 'id'])
 
@@ -235,7 +250,7 @@ def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
                 curr_tweets_series.index = curr_handles
                 curr_tweets_df = curr_tweets_series.reset_index()
                 curr_tweets_df.rename(columns={'index': 'handle'},
-                        inplace=True)
+                                      inplace=True)
                 # first_row to avoid repeating first row
                 first_row = True
                 max_id_series = curr_tweets_df.apply(df_to_file,
@@ -245,8 +260,8 @@ def get_data(tweet_output_fp, twitter_handles_fp, handles_record_fp,
                                           tweets_path)
                 # Get the max_id for the new since_id value
                 max_id_df = \
-                        pd.DataFrame(max_id_series.tolist()).drop_duplicates()
-                max_id_df.to_csv(handles_record_fp, mode='a',
+                    pd.DataFrame(max_id_series.tolist()).drop_duplicates()
+                max_id_df.to_csv(data_dir + handles_record_fp, mode='a',
                                  header=False, index=False)
                 already_seen = already_seen.union(curr_handles)
                 print('Done up to %s' % (curr_handles.iloc[-1]))
