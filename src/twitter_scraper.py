@@ -82,10 +82,8 @@ def get_new_tweets(tweet_name, since_id=1, api=authenticate_twitter(),
 
     curr_info = possible_info.intersection(info_tags)
     if extended_mode:
-        curr_info.add('full_text')
         tweet_mode = 'extended'
     else:
-        curr_info.add('text')
         tweet_mode = 'compatibility'
     curr_info.add('id') # Necessary regardless
     curr_info = sorted(curr_info)
@@ -207,7 +205,13 @@ def get_data(data_dir='data/', tweet_output_fp='complete_state_leg_tweets.csv',
         print('The parameter tags must be in iterable set of tags found in' +
               'the JSON data connected to each tweet from the Tweepy API')
         return
+
     tags = set(tags)
+    if extended_mode:
+        tags.add('full_text')
+    else:
+        tags.add('text')
+    tags = sorted(tags)
 
     # process the paths
     tweets_path = os.path.expanduser(data_dir + tweet_output_fp)
