@@ -258,7 +258,6 @@ def val_bert(model, curr_dataloader, device, curr_y_labels, curr_y_col,
 
     # Tracking variables
     eval_f1_score = 0
-    nb_eval_steps = 0
 
     # Evaluate data for one epoch
     for batch in curr_dataloader:
@@ -301,13 +300,10 @@ def val_bert(model, curr_dataloader, device, curr_y_labels, curr_y_col,
         # Accumulate the f1_score
         eval_f1_score += tmp_f1_score
 
-        # Track the number of batches
-        nb_eval_steps += 1
-
         predictions.append(logits)
 
     # Report the final accuracy for this val run.
-    print("  F1-Score: {0:.2f}".format(eval_f1_score / nb_eval_steps))
+    print("  F1-Score: {0:.2f}".format(eval_f1_score / len(predictions)))
     pred_df = pd.DataFrame(np.concatenate(predictions))
     if curr_y_col in neg_labels:
         pred_df.rename({i: i - len(pred_df.columns)
