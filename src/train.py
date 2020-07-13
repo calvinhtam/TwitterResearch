@@ -257,8 +257,8 @@ def val_bert(model, curr_dataloader, device, curr_y_labels, curr_y_col,
     model.eval()
 
     # Tracking variables
-    eval_loss, eval_f1_score = 0, 0
-    nb_eval_steps, nb_eval_examples = 0, 0
+    eval_f1_score = 0
+    nb_eval_steps = 0
 
     # Evaluate data for one epoch
     for batch in curr_dataloader:
@@ -383,6 +383,11 @@ def trainer(X_train_inputs, X_test_inputs, X_val_inputs,
                                           curr_y_val_labels, curr_y_col,
                                           neg_labels)
 
+            print('========================================')
+            print(' TEMP TEST FOR', curr_y_col)
+            val_bert(model, test_dataloader, device, curr_y_test_labels,
+                     curr_y_col, neg_labels)
+
         print("")
         print("Training complete for {}!".format(curr_y_col))
 
@@ -440,8 +445,9 @@ def training_driver(data_dir='data/', output_dir='model_save/',
     if len(res_dfs) == 1:
         df = res_dfs[0]
     else:
-        # Pretty useless, unnecessary and better practice would probably just
-        # have everything in one training csv file in the first place : - )
+        # Pretty useless and unnecessary
+        # Better practice would probably just have everything in one training-
+        # data csv file in the first place : - )
         df = merge_dfs(res_dfs[0], res_dfs[1])
 
     df, neg_labels = clean_df(df)
